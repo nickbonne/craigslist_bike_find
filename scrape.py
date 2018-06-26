@@ -1,6 +1,6 @@
 
 import re
-from urllib.request import urlopen
+import requests
 from bs4 import BeautifulSoup
 
 
@@ -13,7 +13,8 @@ class Scrape:
 
     def scrape(self, page):
 
-        soup = BeautifulSoup(urlopen(page), 'lxml')
+        response = requests.get(page)
+        soup = BeautifulSoup(response.content, 'lxml')
         soup = soup.find_all(class_='result-title hdrlnk')
         links = []
 
@@ -52,7 +53,8 @@ class Scrape:
 
             try:
 
-                link_soup = BeautifulSoup(urlopen(post[1]), 'lxml')
+                response = requests.get(post[1])
+                link_soup = BeautifulSoup(response.content, 'lxml')
 
                 descrpt = link_soup.find(id='postingbody')
                 descrpt = re.findall(r'<\/div>([\s\S]*)</section>',
