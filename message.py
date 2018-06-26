@@ -15,6 +15,13 @@ class Message:
         return ' '.join(['__[{}]__ [{} - {}]({})\n\n'.format(
                match[2], match[0], match[3], match[1]) for match in matches])
 
+    def format_miss(misses):
+
+        message = '\n\nMissed Links\n\n'
+
+        return message + ' '.join('[[{}]({})\n\n'.format(
+            misses[0], misses[1]))
+
     def send(f_matches):
 
         reddit_id = os.environ['REDDIT_ID']

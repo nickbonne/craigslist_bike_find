@@ -11,9 +11,7 @@ def main():
 
 class Scrape:
 
-    # scrapes home search page for titles and urls
-    # returns a list of lists [title, url]
-    def search(self, page):
+    def scrape(self, page):
 
         soup = BeautifulSoup(urlopen(page), 'lxml')
         soup = soup.find_all(class_='result-title hdrlnk')
@@ -32,7 +30,7 @@ class Scrape:
 
         return links
 
-    def post_scrape(self, posts):
+    def search(self, posts):
 
         final_scores = []
         sizes = ['size 53', '53 cm', '53cm', 'size 54', '54 cm', '54cm',
@@ -55,9 +53,11 @@ class Scrape:
             try:
 
                 link_soup = BeautifulSoup(urlopen(post[1]), 'lxml')
+
                 descrpt = link_soup.find(id='postingbody')
                 descrpt = re.findall(r'<\/div>([\s\S]*)</section>',
                                      str(descrpt))[0].strip().lower()
+
                 price = link_soup.find(class_='price')
                 price = re.findall(r'\$.*<', str(price))[0][:-1]
 
