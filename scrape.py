@@ -48,7 +48,7 @@ class Scrape:
                     'carbon', 'reynolds', 'columbus', 'titanium', 'stainless',
                     'force', 'sram', 'lemond', 'caadx', 'rove', 'diverge',
                     'checkpoint', 'synapse', '853', 'endurace', 'poprad',
-                    'warbird', 'renegade', 'norco']
+                    'warbird', 'renegade']
 
         for post in posts:
 
