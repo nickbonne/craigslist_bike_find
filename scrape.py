@@ -1,6 +1,7 @@
 
+import os
 import re
-import requests
+import requests 
 from bs4 import BeautifulSoup
 
 
@@ -45,7 +46,9 @@ class Scrape:
                     'scott', 'serotta', 'felt', '105', '5800', 'ultegra',
                     'di2', 'dura', 'dura-ace', 'r8000', '170mm', 'gravel',
                     'carbon', 'reynolds', 'columbus', 'titanium', 'stainless',
-                    'force', 'sram']
+                    'force', 'sram', 'lemond', 'caadx', 'rove', 'diverge',
+                    'checkpoint', 'synapse', '853', 'endurace', 'poprad',
+                    'warbird', 'renegade', 'norco']
 
         for post in posts:
 
@@ -53,17 +56,35 @@ class Scrape:
 
             try:
 
+                k_cheat = ['keywords', 'keyword']
                 response = requests.get(post[1])
                 link_soup = BeautifulSoup(response.content, 'lxml')
 
                 descrpt = link_soup.find(id='postingbody')
                 descrpt = re.findall(r'<\/div>([\s\S]*)</section>',
                                      str(descrpt))[0].strip().lower()
+                descrpt = re.sub(r'<[^<]+?>', '', descrpt)
+                descrpt = re.sub(r'[\.,:;!?(){}\[\]\\/]', ' ', descrpt)
+                descrpt = descrpt.replace('\n', '')
 
                 price = link_soup.find(class_='price')
                 price = re.findall(r'\$.*<', str(price))[0][:-1]
 
                 search = post[0] + ' ' + descrpt
+
+                if any(k in descrpt for k in k_cheat):
+
+                    d_split = descrpt.split(' ')
+
+                    for k in k_cheat:
+
+                        try:
+
+                            descrpt = ' '.join(d_split[:d_split.index(k)])
+
+                        except:
+
+                            pass
 
                 if any(size in search for size in sizes):
 
