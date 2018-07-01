@@ -5,7 +5,7 @@ import praw
 
 def main():
 
-    Message.send('rr')
+    pass
 
 
 class Message:
