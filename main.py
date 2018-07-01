@@ -24,7 +24,7 @@ asPic={}&bundleDuplicates={}&search_distance={}&postal={}&min_price=\
 
     if len(missed_posts) > 0:
 
-        formatted_misses = Message._format_miss(missed_posts)
+        formatted_misses = Message.format_miss(missed_posts)
         formatted_matches = formatted_matches + formatted_misses
 
     Message.send(formatted_matches)

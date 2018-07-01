@@ -17,23 +17,28 @@ class Scrape:
         soup = BeautifulSoup(response.content, 'lxml')
         soup = soup.find_all(class_='result-title hdrlnk')
         links = []
+        titles = []
 
         for hit in soup:
 
             result = []
 
             title = re.findall(r'>(.*?)<', str(hit))[0].lower()
-            url = re.findall(r'href="(.*?)">', str(hit))
+            url = re.findall(r'href="(.*?)">', str(hit))[0]
 
-            result.append(title)
-            result.append(url[0])
-            links.append(result)
+            if 'women' not in title and \
+               title not in titles:
+
+                result.append([title, url])
+                titles.append(title)
+                links.append(result)
 
         return links
 
     def search(self, posts):
 
         final_scores = []
+        missed_links = []
         sizes = ['size 53', '53 cm', '53cm', 'size 54', '54 cm', '54cm',
                  'size 55', '55 cm', '55cm', '56 cm', '56cm', 'size 56']
 
@@ -51,7 +56,7 @@ class Scrape:
 
         for post in posts:
 
-            missed_links = []
+            post = post[0]
 
             try:
 
