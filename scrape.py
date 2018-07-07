@@ -11,7 +11,7 @@ def main():
 
 class Scrape:
 
-    def scrape(self, page):
+    def scrape_search_pg(page):
 
         response = requests.get(page)
         soup = BeautifulSoup(response.content, 'lxml')
@@ -35,6 +35,85 @@ class Scrape:
 
         return links
 
+    def scrape_post_pg(url):
+
+        key_cheat = ['keywords', 'keyword']
+
+        response = requests.get(url)
+        page_soup = BeautifulSoup(response.content, 'lxml')
+
+        price = page_soup.find(class_='price')
+        price = re.findall(r'\$.*<', str(price))[0][:-1]
+
+        size = page_soup.find(class_='attrgroup')
+
+        try:
+
+            size = re.findall(r'(?<=dimensions:\s<b>).*(?=<\/b>)',
+                              str(size).lower())[0]
+
+        except:
+
+            size = ''
+
+        item_descrpt = page_soup.find(id='postingbody')
+        # finds the item's description <div>
+        item_descrpt = re.findall(r'<\/div>([\s\S]*)</section>',
+                                  str(item_descrpt))[0].strip().lower()
+        # removes <a> tags and their contents
+        item_descrpt = re.sub(r'(<a\s.+>)', '', item_descrpt)
+        # remove html tags
+        item_descrpt = re.sub(r'<[^<]+?>', '', item_descrpt)
+        # remove some nonalpha characters
+        item_descrpt = re.sub(r'[\:;!?(){}\[\]\\/]',
+                              ' ', item_descrpt)
+        # remove line breaks
+        item_descrpt = item_descrpt.replace('\n', '')
+
+        # removes anything after "keyword" or "keywords"
+        # in item description
+        if any(k in item_descrpt for k in key_cheat):
+
+            d_split = item_descrpt.split(' ')
+
+            for k in key_cheat:
+
+                try:
+
+                    item_descrpt = ' '.join(d_split[:d_split.index(k)])
+
+                except:
+
+                    pass
+
+        # fixing sizing found in item_descrpt for filter
+        # "size 54" becomes "size54"
+        # "54 cm" becomes "54cm"
+        try:
+
+            size_fix = re.search(r'(size\s\d{2}(\.(?=\d)\d{0,1})?)',
+                                 item_descrpt).group(0)
+            size_fix = re.sub(r'\s', '', size_fix)
+            item_descrpt = re.sub(r'(size\s\d{2}(\.(?=\d)\d{0,1})?)', size_fix,
+                                  item_descrpt)
+
+        except:
+
+            pass
+
+        try:
+
+            size_fix = re.findall(r'(\d{2}(\.\d)?\scm)', item_descrpt).group(0)
+            size_fix = re.sub(r'\s', '', size)
+            item_descrpt = re.sub(r'(\d{2}(\.\d)?\scm)',
+                                  size_fix, item_descrpt)
+
+        except:
+
+            pass
+
+        return item_descrpt, price, size
+
     def search(self, posts):
 
         final_scores = []
@@ -42,17 +121,17 @@ class Scrape:
         sizes = ['size 53', '53 cm', '53cm', 'size 54', '54 cm', '54cm',
                  'size 55', '55 cm', '55cm', '56 cm', '56cm', 'size 56']
 
-        keywords = ['cannondale', 'trek', 'specialized', 'salsa', 'kona',
-                    'giant', 'colnago', 'ktm', '6800', 'ridley', 'khs',
-                    'canyon', 'bmc', 'bianchi', 'cervelo', 'pinarello',
-                    'soma', 'gt', 'focus', 'fuji', 'gunnar', 'jamis',
-                    'kestrel', 'lynskey', 'merida', 'norco', 'orbea',
-                    'scott', 'serotta', 'felt', '105', '5800', 'ultegra',
-                    'di2', 'dura', 'dura-ace', 'r8000', '170mm', 'gravel',
-                    'carbon', 'reynolds', 'columbus', 'titanium', 'stainless',
-                    'force', 'sram', 'lemond', 'caadx', 'rove', 'diverge',
-                    'checkpoint', 'synapse', '853', 'endurace', 'poprad',
-                    'warbird', 'renegade']
+        keywords = ['105', '170mm', '5800', '6800', '853', 'bianchi', 'bmc',
+                    'caadx', 'cannondale', 'canyon', 'carbon', 'cervelo',
+                    'checkpoint', 'colnago', 'columbus', 'di2', 'diverge',
+                    'dura', 'dura-ace', 'endurace', 'felt', 'focus', 'force',
+                    'fuji', 'giant', 'gravel', 'gt', 'gunnar', 'jamis',
+                    'kestrel', 'khs', 'kona', 'ktm', 'lemond', 'lynskey',
+                    'merida', 'niner', 'norco', 'orbea', 'pinarello', 'poprad',
+                    'r8000', 'renegade', 'reynolds', 'ridley', 'rove', 'salsa',
+                    'scott', 'serotta', 'soma', 'specialized', 'sram',
+                    'stainless', 'synapse', 'titanium', 'trek', 'ultegra',
+                    'warbird']
 
         for post in posts:
 
@@ -64,37 +143,26 @@ class Scrape:
                 response = requests.get(post[1])
                 link_soup = BeautifulSoup(response.content, 'lxml')
 
-                descrpt = link_soup.find(id='postingbody')
-                descrpt = re.findall(r'<\/div>([\s\S]*)</section>',
-                                     str(descrpt))[0].strip().lower()
-                descrpt = re.sub(r'<[^<]+?>', '', descrpt)
-                descrpt = re.sub(r'[\.,:;!?(){}\[\]\\/]', ' ', descrpt)
-                descrpt = descrpt.replace('\n', '')
+                item_descrpt = link_soup.find(id='postingbody')
+                item_descrpt = re.findall(r'<\/div>([\s\S]*)</section>',
+                                          str(item_descrpt))[0].strip().lower()
+                item_descrpt = re.sub(r'<[^<]+?>', '', item_descrpt)
+                item_descrpt = re.sub(r'[\.,:;!?(){}\[\]\\/]',
+                                      ' ', item_descrpt)
+                item_descrpt = item_descrpt.replace('\n', '')
 
                 price = link_soup.find(class_='price')
                 price = re.findall(r'\$.*<', str(price))[0][:-1]
 
-                search = post[0] + ' ' + descrpt
+                search = post[0] + ' ' + item_descrpt
 
-                if any(k in descrpt for k in k_cheat):
 
-                    d_split = descrpt.split(' ')
-
-                    for k in k_cheat:
-
-                        try:
-
-                            descrpt = ' '.join(d_split[:d_split.index(k)])
-
-                        except:
-
-                            pass
 
                 if any(size in search for size in sizes):
 
                     def key_search(keyword):
 
-                        if keyword in descrpt:
+                        if keyword in item_descrpt:
 
                             return 1
 
