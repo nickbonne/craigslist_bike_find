@@ -23,7 +23,7 @@ class Filter:
 
     others = ['105', '170mm', '5800', '6800', '853', 'caad', 'carbon',
               'columbus', 'di2', 'dura-ace', 'force', 'r8000',
-              'reynolds', 'sram', 'stainless', 'titanium', 'ultegra']
+              'reynolds', 'sram', 'titanium', 'ultegra']
 
     sizes = ['size53', '53 cm', '53cm', 'size54', '54 cm', '54cm',
              'size55', '55 cm', '55cm', '56 cm', '56cm', 'size56']
