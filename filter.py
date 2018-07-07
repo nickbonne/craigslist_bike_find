@@ -13,7 +13,7 @@ class Filter:
     brands = ['bianchi', 'bmc', 'cannondale', 'canyon', 'cervelo',
               'colnago', 'felt', 'focus', 'fuji', 'giant', 'gt',
               'gunnar', 'jamis', 'kestrel', 'khs', 'kona', 'ktm',
-              'lemond', 'lynskey', 'merida', 'niner', 'norco',
+              'lemond', 'litespeed', 'lynskey', 'merida', 'niner', 'norco',
               'orbea', 'pinarello', 'ridley', 'salsa', 'scott',
               'serotta', 'soma', 'specialized', 'trek']
 
